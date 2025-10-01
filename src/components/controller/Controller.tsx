@@ -11,9 +11,8 @@ function Controller() {
         <div className="grid grid-cols-4 gap-3">
             {notePadDefs.map((pad, i) => (
                 <Pad
-                    key={pad.id}
-                    id={pad.id}
-                    label={pad.label}
+                    key={pad.stepNumber}
+                    padDef={pad}
                     ref={(el) => {
                         padRefs.current[i] = el;
                     }}

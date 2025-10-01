@@ -1,26 +1,122 @@
 export type NotePadDef = {
-    id: string;
-    label: string;
+    stepNumber: number;
+    midiNote: number;
+    label1: string;
+    label2?: string;
     key: string;
 };
 
-const NOTE_PAD_PREFIX = "pad";
-
 export const notePadDefs: NotePadDef[] = [
-    { id: `${NOTE_PAD_PREFIX}1`, label: "1", key: "1" },
-    { id: `${NOTE_PAD_PREFIX}2`, label: "2", key: "2" },
-    { id: `${NOTE_PAD_PREFIX}3`, label: "3", key: "3" },
-    { id: `${NOTE_PAD_PREFIX}4`, label: "4", key: "4" },
-    { id: `${NOTE_PAD_PREFIX}5`, label: "5", key: "q" },
-    { id: `${NOTE_PAD_PREFIX}6`, label: "6", key: "w" },
-    { id: `${NOTE_PAD_PREFIX}7`, label: "7", key: "e" },
-    { id: `${NOTE_PAD_PREFIX}8`, label: "8", key: "r" },
-    { id: `${NOTE_PAD_PREFIX}9`, label: "9", key: "a" },
-    { id: `${NOTE_PAD_PREFIX}10`, label: "10", key: "s" },
-    { id: `${NOTE_PAD_PREFIX}11`, label: "11", key: "d" },
-    { id: `${NOTE_PAD_PREFIX}12`, label: "12", key: "f" },
-    { id: `${NOTE_PAD_PREFIX}13`, label: "13", key: "z" },
-    { id: `${NOTE_PAD_PREFIX}14`, label: "14", key: "x" },
-    { id: `${NOTE_PAD_PREFIX}15`, label: "15", key: "c" },
-    { id: `${NOTE_PAD_PREFIX}16`, label: "16", key: "v" },
+    {
+        stepNumber: 1,
+        midiNote: 60,
+        label1: "1",
+        label2: "",
+        key: "1",
+    },
+    {
+        stepNumber: 2,
+        midiNote: 61,
+        label1: "2",
+        label2: "",
+        key: "2",
+    },
+    {
+        stepNumber: 3,
+        midiNote: 62,
+        label1: "3",
+        label2: "",
+        key: "3",
+    },
+    {
+        stepNumber: 4,
+        midiNote: 63,
+        label1: "4",
+        label2: "",
+        key: "4",
+    },
+    {
+        stepNumber: 5,
+        midiNote: 64,
+        label1: "5",
+        label2: "",
+        key: "q",
+    },
+    {
+        stepNumber: 6,
+        midiNote: 65,
+        label1: "6",
+        label2: "",
+        key: "w",
+    },
+    {
+        stepNumber: 7,
+        midiNote: 66,
+        label1: "7",
+        label2: "",
+        key: "e",
+    },
+    {
+        stepNumber: 8,
+        midiNote: 67,
+        label1: "8",
+        label2: "",
+        key: "r",
+    },
+    {
+        stepNumber: 9,
+        midiNote: 68,
+        label1: "9",
+        label2: "",
+        key: "a",
+    },
+    {
+        stepNumber: 10,
+        midiNote: 69,
+        label1: "10",
+        label2: "",
+        key: "s",
+    },
+    {
+        stepNumber: 11,
+        midiNote: 70,
+        label1: "11",
+        label2: "",
+        key: "d",
+    },
+    {
+        stepNumber: 12,
+        midiNote: 71,
+        label1: "12",
+        label2: "",
+        key: "f",
+    },
+    {
+        stepNumber: 13,
+        midiNote: 72,
+        label1: "13",
+        label2: "Kik",
+        key: "z",
+    },
+    {
+        stepNumber: 14,
+        midiNote: 73,
+        label1: "14",
+        label2: "Snr",
+        key: "x",
+    },
+    {
+        stepNumber: 15,
+        midiNote: 74,
+        label1: "15",
+        label2: "Clp",
+        key: "c",
+    },
+    {
+        stepNumber: 16,
+        midiNote: 75,
+        label1: "16",
+        label2: "Hat",
+        key: "v",
+    },
 ];

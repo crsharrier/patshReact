@@ -1,8 +1,9 @@
 import { useState, useImperativeHandle, forwardRef } from "react";
+import type { NotePadDef } from "./config";
+import useMidiStore from "@/stores/midiStore";
 
 interface PadProps {
-    id: string;
-    label: string;
+    padDef: NotePadDef;
 }
 
 export interface PadHandle {
@@ -11,10 +12,13 @@ export interface PadHandle {
 
 const Pad = forwardRef<PadHandle, PadProps>((props, ref) => {
     const [isFlashing, setIsFlashing] = useState(false);
+    const pad = props.padDef;
+    const sendNote = useMidiStore((state) => state.sendNote);
 
     // Expose `pressPad` to the parent
     useImperativeHandle(ref, () => ({
         pressPad() {
+            sendNote(pad.midiNote);
             setIsFlashing(true);
             setTimeout(() => setIsFlashing(false), 150); // flash for 150ms
         },
@@ -28,13 +32,19 @@ const Pad = forwardRef<PadHandle, PadProps>((props, ref) => {
 
     return (
         <div
-            id={props.id}
-            className={`size-20 p-1 ${
+            id={`pad${pad.stepNumber}`}
+            className={`size-20 flex flex-col p-1 ${
                 isFlashing ? "bg-pad-flash" : "bg-pad-base"
             } cursor-pointer`}
             onClick={handleClick}
         >
-            {props.label}
+            {/* labels  */}
+            <div className="flex justify-between text-xs">
+                <span>{pad.label1}</span>
+                {pad.label2 && (
+                    <span className="text-lg pr-1">{pad.label2}</span>
+                )}
+            </div>
         </div>
     );
 });
