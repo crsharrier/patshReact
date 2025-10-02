@@ -15,20 +15,17 @@ const Pad = forwardRef<PadHandle, PadProps>((props, ref) => {
     const pad = props.padDef;
     const sendNote = useMidiStore((state) => state.sendNote);
 
+    const pressPad = () => {
+        sendNote(pad.midiNote);
+        setIsFlashing(true);
+        setTimeout(() => setIsFlashing(false), 150); // flash for 150ms
+    };
+
     // Expose `pressPad` to the parent
-    useImperativeHandle(ref, () => ({
-        pressPad() {
-            sendNote(pad.midiNote);
-            setIsFlashing(true);
-            setTimeout(() => setIsFlashing(false), 150); // flash for 150ms
-        },
-    }));
+    useImperativeHandle(ref, () => ({ pressPad }));
 
     // Local click handler that calls pressPad
-    const handleClick = () => {
-        setIsFlashing(true);
-        setTimeout(() => setIsFlashing(false), 150);
-    };
+    const handleClick = () => pressPad();
 
     return (
         <div
