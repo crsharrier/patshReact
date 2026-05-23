@@ -1,10 +1,12 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { Button } from "../ui/button";
 import { Controller } from "@/lib/patsh/controller/controller";
 import { ViewModel } from "@/lib/patsh/view/viewModel";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "@/lib/patsh/config";
 import type { PatshCore } from "@/lib/patsh/core/patshCore";
 import { drawPadGrid } from "./draw";
+import { Input } from "../ui/input";
+import { Play, StopCircle } from "lucide-react";
 
 export type PadGridProps = {
     patsh: PatshCore;
@@ -57,6 +59,22 @@ export function PadGrid({ patsh, viewModel }: PadGridProps) {
         };
     }, [viewModel]);
 
+    const [bpm, setBpm] = useState(patsh.transport.bpm.value);
+    const [playbackState, setPlaybackState] = useState(patsh.playbackState);
+
+    const handleBpmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newBpm = parseInt(e.target.value, 10);
+        if (!isNaN(newBpm)) {
+            setBpm(newBpm);
+            patsh.transport.bpm.value = newBpm;
+        }
+    };
+
+    const handlePressPlayPause = async () => {
+        await patsh.playPause();
+        setPlaybackState(patsh.playbackState);
+    };
+
     return (
         <div className="canvas-container">
             <canvas
@@ -65,9 +83,20 @@ export function PadGrid({ patsh, viewModel }: PadGridProps) {
                 height={CANVAS_HEIGHT}
                 style={{ background: "#1e293b", borderRadius: "8px" }}
             />
-            <Button className="mt-4" onClick={() => void patsh.playPause()}>
-                {patsh.playbackState === "started" ? "Stop" : "Play"}
-            </Button>
+
+            <div className="mt-4 flex space-x-4">
+                <Button onClick={handlePressPlayPause}>
+                    {playbackState === "started" ? <Play /> : <StopCircle />}
+                </Button>
+
+                <Input
+                    type="number"
+                    className="w-min"
+                    step="5"
+                    value={bpm}
+                    onChange={handleBpmChange}
+                ></Input>
+            </div>
         </div>
     );
 }

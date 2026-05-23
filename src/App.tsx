@@ -6,11 +6,11 @@ import { ViewModel } from "./lib/patsh/view/viewModel";
 
 function App() {
     const patsh = new PatshCore();
-    const controller = new Controller();
-    const viewModel = new ViewModel(controller, patsh);
+    const controller = new Controller(patsh);
+    const viewModel = new ViewModel(controller);
 
     useKeyboardInput(controller);
-    
+
     return (
         <div className="h-screen w-screen flex flex-col">
             {/* main area */}

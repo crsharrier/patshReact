@@ -1,14 +1,17 @@
 import {
-    PAD_ACTIVE_COLOR,
+    PAD_ACTIVE_LUMINANCE,
     PAD_GAP,
     PAD_HEIGHT,
-    PAD_INACTIVE_COLOR,
+    PAD_HIGHLIGHT_LUMINANCE,
+    PAD_INACTIVE_LUMINANCE,
+    PAD_SATURATION,
     PAD_WIDTH,
     PADDING,
     TOPBAR_HEIGHT,
     TOTAL_STEPS,
 } from "../config";
 import type { Controller } from "../controller/controller";
+import { fnPadDefs } from "../controller/types";
 import type { PatshCore } from "../core/patshCore";
 
 type PadState = {
@@ -17,7 +20,8 @@ type PadState = {
     y: number;
     width: number;
     height: number;
-    isHighlighted: boolean;
+    text1?: string;
+    text2?: string;
 };
 
 // =============================================================================
@@ -27,35 +31,93 @@ export class ViewModel {
     controller: Controller;
     patsh: PatshCore;
     notePads: Record<number, PadState>;
+    modePads: Record<number, PadState>;
     currentStep: number;
-    private highlightedPads: Set<number>;
+    private highlightedNotePads: Set<number>;
+    private highlightedModePads: Set<number>;
 
-    constructor(controller: Controller, patsh: PatshCore) {
+    constructor(controller: Controller) {
         this.controller = controller;
-        this.controller.registerPadListener(this.flashPad.bind(this));
-        this.patsh = patsh;
-        this.highlightedPads = new Set();
-        this.notePads = this.computePads();
+        this.controller.registerNotePadListener({
+            press: (num: number) => {
+                this.flashPad(num, "note");
+            },
+        });
+        this.controller.registerFnPadListener({
+            press: (num: number) => {
+                this.flashPad(num, "fn");
+            },
+        });
+        this.patsh = controller.patsh;
+        this.highlightedNotePads = new Set();
+        this.highlightedModePads = new Set();
+        this.notePads = this.computeNotePads();
+        this.modePads = this.computeModePads();
         this.currentStep = this.computeCurrentStep();
     }
 
-    private computePads(): Record<number, PadState> {
+    private computeNotePadColor(stepNum: number): string {
+        const trackNum = this.controller.currentTrack;
+        const stepState = this.patsh.tracks[trackNum].steps[stepNum];
+        const isHighlighted = this.highlightedNotePads.has(stepNum);
+        const hue = this.controller.padMode.hue;
+        const luminance = isHighlighted
+            ? PAD_HIGHLIGHT_LUMINANCE
+            : stepState.active
+              ? PAD_ACTIVE_LUMINANCE
+              : PAD_INACTIVE_LUMINANCE;
+        return `hsl(${hue}, ${PAD_SATURATION}%, ${luminance}%)`;
+    }
+
+    private computeNotePads(): Record<number, PadState> {
         const pads: Record<number, PadState> = {};
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
                 const stepNum = i * 4 + j + 1; // Calculate step number (1-16)
-                const trackNum = this.controller.currentTrack;
-                const stepState = this.patsh.tracks[trackNum].steps[stepNum];
-                const color = stepState.active
-                    ? PAD_ACTIVE_COLOR
-                    : PAD_INACTIVE_COLOR;
+                const color = this.computeNotePadColor(stepNum);
                 pads[stepNum] = {
                     color,
                     x: PADDING + j * (PAD_WIDTH + PAD_GAP),
                     y: PADDING + TOPBAR_HEIGHT + i * (PAD_HEIGHT + PAD_GAP),
                     width: PAD_WIDTH,
                     height: PAD_HEIGHT,
-                    isHighlighted: this.highlightedPads.has(stepNum),
+                };
+            }
+        }
+        return pads;
+    }
+
+    private computeModePadColor(modeIndex: number): string {
+        const fnPad = fnPadDefs[modeIndex as keyof typeof fnPadDefs];
+        const mode = this.controller.shiftMode ? fnPad.shiftFn : fnPad.fn;
+        const isActive = this.controller.padMode.name === mode?.name;
+        const isHighlighted = this.highlightedModePads.has(modeIndex);
+        const luminance = isHighlighted
+            ? PAD_HIGHLIGHT_LUMINANCE
+            : isActive
+              ? PAD_ACTIVE_LUMINANCE
+              : PAD_INACTIVE_LUMINANCE;
+        return `hsl(${mode?.hue}, ${PAD_SATURATION}%, ${luminance}%)`;
+    }
+
+    private computeModePads(): Record<number, PadState> {
+        const pads: Record<number, PadState> = {};
+        for (let i = 0; i < 2; i++) {
+            for (let j = 0; j < 4; j++) {
+                const modeIndex = (i * 4 + j + 1) as keyof typeof fnPadDefs;
+                const mode = fnPadDefs[modeIndex].fn.name;
+                const gridWidth = PADDING + 4 * (PAD_WIDTH + PAD_GAP);
+                const xOffset = PADDING + i * (PAD_WIDTH + PAD_GAP) + gridWidth;
+                const yOffset =
+                    PADDING + TOPBAR_HEIGHT + j * (PAD_HEIGHT + PAD_GAP);
+                pads[modeIndex] = {
+                    color: this.computeModePadColor(modeIndex),
+                    x: xOffset,
+                    y: yOffset,
+                    width: PAD_WIDTH,
+                    height: PAD_HEIGHT,
+                    text1: mode,
+                    text2: fnPadDefs[modeIndex].shiftFn?.name,
                 };
             }
         }
@@ -70,17 +132,23 @@ export class ViewModel {
         return (Math.floor(elapsedInLoop / secondsPerStep) % TOTAL_STEPS) + 1; // Steps are 1-indexed
     }
 
-    flashPad(stepNum: number) {
-        if (this.notePads[stepNum]) {
-            this.highlightedPads.add(stepNum);
+    flashPad(num: number, noteOrMode: "note" | "fn") {
+        if (noteOrMode === "note" && this.notePads[num]) {
+            this.highlightedNotePads.add(num);
             setTimeout(() => {
-                this.highlightedPads.delete(stepNum);
+                this.highlightedNotePads.delete(num);
+            }, 100); // Highlight for 100ms
+        } else if (noteOrMode === "fn" && this.modePads[num]) {
+            this.highlightedModePads.add(num);
+            setTimeout(() => {
+                this.highlightedModePads.delete(num);
             }, 100); // Highlight for 100ms
         }
     }
 
     update() {
-        this.notePads = this.computePads();
+        this.notePads = this.computeNotePads();
+        this.modePads = this.computeModePads();
         this.currentStep = this.computeCurrentStep();
     }
 }

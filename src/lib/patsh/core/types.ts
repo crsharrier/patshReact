@@ -12,6 +12,7 @@ export type TrackState = {
     muted: boolean;
     soloed: boolean;
     steps: StepStates;
+    sampleUrl?: string;
 };
 
 export type TrackStates = Record<number, TrackState>;
