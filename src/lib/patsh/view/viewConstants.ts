@@ -1,6 +1,6 @@
 export type PadState = {
     colorHex: string;
-    isHighlighted: boolean;
+    isStruck: boolean;
 };
 
 export type NotePadStates = {

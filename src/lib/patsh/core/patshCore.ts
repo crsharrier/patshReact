@@ -1,11 +1,10 @@
 import { DEFAULT_BPM } from "../config";
-import type { FxState, StepStates, TrackStates } from "./coreConstants";
-import * as Tone from "tone";
-
-const TRACK_1_SAMPLE_URL = new URL(
-    "../../../assets/MaxV - Kick 1.wav",
-    import.meta.url
-).href;
+import {
+    type FxState,
+    type StepStates,
+    type TrackStates,
+} from "./coreConstants";
+import { ToneCore } from "./toneCore";
 
 function createEmptySteps(numSteps: number = 16): StepStates {
     return Object.fromEntries(
@@ -24,7 +23,6 @@ function createEmptyTracks(numTracks: number = 16): TrackStates {
                 muted: false,
                 soloed: false,
                 steps: createEmptySteps(),
-                sampleUrl: i === 0 ? TRACK_1_SAMPLE_URL : undefined,
             },
         ])
     ) as TrackStates;
@@ -34,59 +32,89 @@ function createEmptyTracks(numTracks: number = 16): TrackStates {
 // PatshCore
 // =============================================================================
 export class PatshCore {
-    transport: ReturnType<typeof Tone.getTransport>;
+    private toneCore: ToneCore;
+
     isRecording: boolean;
     tracks: TrackStates;
     fxs: FxState[];
-    private track1Player: Tone.Player;
 
     constructor() {
-        this.transport = Tone.getTransport();
-        this.bpm = DEFAULT_BPM;
         this.isRecording = false;
         this.tracks = createEmptyTracks();
         this.fxs = [];
-        this.track1Player = new Tone.Player(
-            this.tracks[1].sampleUrl
-        ).toDestination();
 
-        this.transport.scheduleRepeat(this.triggerTrack1Step, "16n");
+        this.toneCore = new ToneCore(this);
+        this.bpm = DEFAULT_BPM;
     }
 
-    private getCurrentStep() {
-        const secondsPerStep = 60 / this.transport.bpm.value / 4;
-        const elapsedInLoop = this.transport.seconds;
-        return (Math.floor(elapsedInLoop / secondsPerStep) % 16) + 1;
+    get currentStep(): number {
+        return this.toneCore.currentStep;
     }
 
-    private triggerTrack1Step = (time: number) => {
-        const currentStep = this.getCurrentStep();
-        const stepState = this.tracks[1].steps[currentStep];
+    // private playStep(time: number, trackNum: string) {
+    //     if (!this.trackPlayers?.has(trackNum)) {
+    //         if (!this.warnedTrackPlayers.has(trackNum)) {
+    //             console.warn(
+    //                 `No player found for track ${trackNum}. Check TRACK_SAMPLE_URLS mapping.`
+    //             );
+    //             this.warnedTrackPlayers.add(trackNum);
+    //         }
+    //         return;
+    //     }
 
-        if (stepState?.active) {
-            this.track1Player.start(time);
-        }
-    };
+    //     const player = this.trackPlayers.player(trackNum);
+    //     if (!player.loaded) {
+    //         if (!this.warnedTrackPlayers.has(trackNum)) {
+    //             console.warn(
+    //                 `Player for track ${trackNum} is not loaded yet. Skipping trigger.`
+    //             );
+    //             this.warnedTrackPlayers.add(trackNum);
+    //         }
+    //         return;
+    //     }
 
-    get playbackState() {
-        return this.transport.state;
-    }
+    //     console.log(`Triggering track ${trackNum} at time ${time.toFixed(2)}s`);
+    //     player.start(time);
+    // }
+
+    // private advanceSequencer = (time: number) => {
+    //     for (const trackNum in this.tracks) {
+    //         const track = this.tracks[trackNum];
+    //         if (track.muted) continue;
+    //         if (
+    //             Object.values(this.tracks).some((t) => t.soloed) &&
+    //             !track.soloed
+    //         )
+    //             continue;
+
+    //         const stepState = track.steps[this.currentStep];
+    //         if (stepState?.active) {
+    //             this.playStep(time, trackNum);
+    //         }
+    //     }
+    // };
 
     get bpm() {
-        return this.transport.bpm.value;
+        return this.toneCore.bpm;
     }
 
     set bpm(value: number) {
-        this.transport.bpm.value = value;
+        this.toneCore.bpm = value;
+    }
+
+    get playbackState() {
+        return this.toneCore.playbackState;
+    }
+
+    get seconds() {
+        return this.toneCore.seconds;
     }
 
     async playPause() {
-        if (this.transport.state === "started") {
-            this.transport.pause();
-        } else {
-            await Tone.loaded();
-            await Tone.start();
-            this.transport.start();
-        }
+        await this.toneCore.playPause();
+    }
+
+    async stop() {
+        await this.toneCore.stop();
     }
 }

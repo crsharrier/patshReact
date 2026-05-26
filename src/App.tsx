@@ -4,11 +4,13 @@ import { useKeyboardInput } from "./lib/patsh/controller/keyboardInput";
 import { PatshCore } from "./lib/patsh/core/patshCore";
 import { ViewModel } from "./lib/patsh/view/viewModel";
 
-function App() {
-    const patsh = new PatshCore();
-    const controller = new Controller(patsh);
-    const viewModel = new ViewModel(controller);
+export type AppProps = {
+    patsh: PatshCore;
+    controller: Controller;
+    viewModel: ViewModel;
+};
 
+function App({ patsh, controller, viewModel }: AppProps) {
     useKeyboardInput(controller);
 
     return (

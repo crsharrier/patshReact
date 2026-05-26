@@ -22,6 +22,8 @@ class NotePad {
         const stepState = this.patsh.tracks[trackNum].steps[this.id];
         if (padMode.name === "noteEdit") {
             stepState.active = !stepState.active;
+        } else if (padMode.name === "trackSelect") {
+            this.controller.currentTrack = this.id;
         }
     }
 
@@ -47,7 +49,7 @@ class FnPad {
             this.controller.patsh.playPause();
         } else if (this.padFn.fn.name === "stop") {
             if (this.controller.patsh.playbackState !== "stopped") {
-                this.controller.patsh.transport.stop();
+                this.controller.patsh.stop();
             }
         }
     }

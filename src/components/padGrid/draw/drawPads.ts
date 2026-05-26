@@ -48,7 +48,7 @@ const drawNotePads = (ctx: CanvasRenderingContext2D, viewModel: ViewModel) => {
         );
         ctx.fillText(`${pad.text1 || ""}`, pad.x + 5, pad.y + 15);
         ctx.fillText(`${pad.text2 || ""}`, pad.x + 5, pad.y + 30);
-        if (Number(padKey) === viewModel.currentStep) {
+        if (Number(padKey) === viewModel.patsh.currentStep) {
             ctx.strokeStyle = PLAYHEAD_COLOR;
             ctx.lineWidth = 3;
             ctx.strokeRect(pad.x, pad.y, pad.width, pad.height);

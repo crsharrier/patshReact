@@ -59,14 +59,14 @@ export function PadGrid({ patsh, viewModel }: PadGridProps) {
         };
     }, [viewModel]);
 
-    const [bpm, setBpm] = useState(patsh.transport.bpm.value);
+    const [bpm, setBpm] = useState(patsh.bpm);
     const [playbackState, setPlaybackState] = useState(patsh.playbackState);
 
     const handleBpmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newBpm = parseInt(e.target.value, 10);
         if (!isNaN(newBpm)) {
             setBpm(newBpm);
-            patsh.transport.bpm.value = newBpm;
+            patsh.bpm = newBpm;
         }
     };
 
