@@ -17,6 +17,6 @@ const viewModel = new ViewModel(controller);
 
 ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-        <App patsh={patsh} controller={controller} viewModel={viewModel} />
+        <App viewModel={viewModel} />
     </React.StrictMode>
 );

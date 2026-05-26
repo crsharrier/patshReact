@@ -56,6 +56,7 @@ const LUMINANCE_FNS: Record<PadMode["name"], LuminanceFn> = {
     noteEdit: noteEditLuminance,
     fx: otherLuminance,
     perf: otherLuminance,
+    patternSelect: otherLuminance,
     trackSelect: trackSelectLuminance,
     mute: muteLuminance,
     solo: soloLuminance,

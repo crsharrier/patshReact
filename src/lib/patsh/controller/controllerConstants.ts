@@ -36,12 +36,17 @@ export const padModeDefs = {
     fx: {
         name: "fx",
         hue: 90,
+        type: "holdMode",
+    },
+    patternSelect: {
+        name: "patternSelect",
+        hue: 157.5,
         type: "toggleMode",
     },
     perf: {
         name: "perf",
-        hue: 112.5,
-        type: "toggleMode",
+        hue: 45,
+        type: "holdMode",
     },
     trackSelect: {
         name: "trackSelect",
@@ -67,11 +72,11 @@ export type FnPadDef = {
 
 export const fnPadDefs = {
     1: {
-        fn: padModeDefs["notePlay"],
+        fn: padModeDefs["noteEdit"],
         shiftFn: null,
     },
     2: {
-        fn: padModeDefs["noteEdit"],
+        fn: padModeDefs["notePlay"],
         shiftFn: null,
     },
     3: {
@@ -83,12 +88,12 @@ export const fnPadDefs = {
         shiftFn: null,
     },
     5: {
-        fn: padModeDefs["fx"],
+        fn: padModeDefs["patternSelect"],
         shiftFn: null,
     },
     6: {
-        fn: padModeDefs["perf"],
-        shiftFn: null,
+        fn: padModeDefs["fx"],
+        shiftFn: padModeDefs["perf"],
     },
     7: {
         fn: padModeDefs["mute"],

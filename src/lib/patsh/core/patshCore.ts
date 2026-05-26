@@ -1,10 +1,20 @@
 import { DEFAULT_BPM } from "../config";
 import {
+    TRACK_SAMPLE_URLS,
     type FxState,
     type StepStates,
     type TrackStates,
 } from "./coreConstants";
-import { ToneCore } from "./toneCore";
+import * as Tone from "tone";
+
+const initPlayers = () =>
+    new Tone.Players({
+        urls: Object.fromEntries(
+            TRACK_SAMPLE_URLS.map((url, i) => [(i + 1).toString(), url])
+        ),
+        fadeOut: "64n",
+        baseUrl: "/assets/",
+    }).toDestination();
 
 function createEmptySteps(numSteps: number = 16): StepStates {
     return Object.fromEntries(
@@ -32,7 +42,8 @@ function createEmptyTracks(numTracks: number = 16): TrackStates {
 // PatshCore
 // =============================================================================
 export class PatshCore {
-    private toneCore: ToneCore;
+    private static isInitialized: boolean = false;
+    private trackPlayers?: Tone.Players;
 
     private playingNotePads: Set<number>;
     isRecording: boolean;
@@ -45,40 +56,81 @@ export class PatshCore {
         this.tracks = createEmptyTracks();
         this.fxs = [];
 
-        this.toneCore = new ToneCore(this);
         this.bpm = DEFAULT_BPM;
     }
 
+    async initializeTone() {
+        await Tone.start();
+        this.trackPlayers = initPlayers();
+        await Tone.loaded();
+        Tone.getTransport().scheduleRepeat(this.playStep, "16n");
+        PatshCore.isInitialized = true;
+    }
+
+    private playStep = (time: number) => {
+        for (const [trackNum, trackState] of Object.entries(this.tracks)) {
+            if (
+                Object.values(this.tracks).some((t) => t.soloed) &&
+                !trackState.soloed
+            )
+                continue;
+            if (trackState.muted && !trackState.soloed) continue;
+            const stepState = trackState.steps[this.currentStep];
+            if (stepState.active) {
+                const player = this.trackPlayers?.player(trackNum);
+                if (player) {
+                    player.start(time);
+                    this.playNotePad(Number(trackNum));
+                }
+            }
+        }
+    };
+
     get currentStep(): number {
-        return this.toneCore.currentStep;
+        const secondsPerStep = 60 / Tone.getTransport().bpm.value / 4;
+        const elapsedInLoop = Tone.getTransport().seconds;
+        return (Math.floor(elapsedInLoop / secondsPerStep) % 16) + 1;
+    }
+
+    get isToneInitialized(): boolean {
+        return PatshCore.isInitialized;
     }
 
     get bpm() {
-        return this.toneCore.bpm;
+        return Tone.getTransport().bpm.value;
     }
 
     set bpm(value: number) {
-        this.toneCore.bpm = value;
+        Tone.getTransport().bpm.value = value;
     }
 
     get playbackState() {
-        return this.toneCore.playbackState;
+        return Tone.getTransport().state;
     }
 
-    get seconds() {
-        return this.toneCore.seconds;
+    // get seconds() {
+    //     return Tone.getTransport().seconds;
+    // }
+
+    async stop() {
+        Tone.getTransport().stop();
+        if (this.trackPlayers) {
+            this.trackPlayers.stopAll();
+        }
     }
 
     async playPause() {
-        await this.toneCore.playPause();
+        if (Tone.getTransport().state === "started") {
+            Tone.getTransport().pause();
+        } else {
+            Tone.getTransport().start();
+        }
     }
-
-    async stop() {
-        await this.toneCore.stop();
-    }
-
-    previewSound(trackNum: number) {
-        this.toneCore.previewSound(trackNum);
+    async previewSound(trackNum: number) {
+        const player = this.trackPlayers?.player(trackNum.toString());
+        if (player) {
+            player.start();
+        }
     }
 
     // =========================================================================
