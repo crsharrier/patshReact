@@ -1,17 +1,17 @@
 import {
-    PAD_ACTIVE_LUMINANCE,
     PAD_GAP,
     PAD_HEIGHT,
-    PAD_HIGHLIGHT_LUMINANCE,
-    PAD_INACTIVE_LUMINANCE,
+    PAD_LUMINANCE_4,
+    PAD_LUMINANCE_0,
     PAD_SATURATION,
     PAD_WIDTH,
     PADDING,
     TOPBAR_HEIGHT,
     TOTAL_STEPS,
+    PAD_LUMINANCE_2,
 } from "../config";
 import type { Controller } from "../controller/controller";
-import { fnPadDefs } from "../controller/types";
+import { fnPadDefs } from "../controller/controllerConstants";
 import type { PatshCore } from "../core/patshCore";
 
 type PadState = {
@@ -62,10 +62,10 @@ export class ViewModel {
         const isHighlighted = this.highlightedNotePads.has(stepNum);
         const hue = this.controller.padMode.hue;
         const luminance = isHighlighted
-            ? PAD_HIGHLIGHT_LUMINANCE
+            ? PAD_LUMINANCE_4
             : stepState.active
-              ? PAD_ACTIVE_LUMINANCE
-              : PAD_INACTIVE_LUMINANCE;
+              ? PAD_LUMINANCE_2
+              : PAD_LUMINANCE_0;
         return `hsl(${hue}, ${PAD_SATURATION}%, ${luminance}%)`;
     }
 
@@ -93,10 +93,10 @@ export class ViewModel {
         const isActive = this.controller.padMode.name === mode?.name;
         const isHighlighted = this.highlightedModePads.has(modeIndex);
         const luminance = isHighlighted
-            ? PAD_HIGHLIGHT_LUMINANCE
+            ? PAD_LUMINANCE_4
             : isActive
-              ? PAD_ACTIVE_LUMINANCE
-              : PAD_INACTIVE_LUMINANCE;
+              ? PAD_LUMINANCE_2
+              : PAD_LUMINANCE_0;
         return `hsl(${mode?.hue}, ${PAD_SATURATION}%, ${luminance}%)`;
     }
 

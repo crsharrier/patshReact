@@ -1,5 +1,5 @@
 import { DEFAULT_BPM } from "../config";
-import type { FxState, StepStates, TrackStates } from "./types";
+import type { FxState, StepStates, TrackStates } from "./coreConstants";
 import * as Tone from "tone";
 
 const TRACK_1_SAMPLE_URL = new URL(

@@ -4,7 +4,7 @@ import {
     type PadMode,
     type FnPadDef,
     DEFAULT_PAD_MODE,
-} from "./types";
+} from "./controllerConstants";
 
 class NotePad {
     id: number;

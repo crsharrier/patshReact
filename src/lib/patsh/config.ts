@@ -13,9 +13,10 @@ export const CANVAS_HEIGHT =
 // export const PAD_HIGHLIGHT_COLOR = "#ffffff"; // Amber highlight for flashed pads
 export const PLAYHEAD_COLOR = "#f8fafc"; // Off-white for playhead outline
 export const PAD_SATURATION = 70; // Saturation for pad colors
-export const PAD_HIGHLIGHT_LUMINANCE = 90;
-export const PAD_ACTIVE_LUMINANCE = 50; // Luminance for active pads
-export const PAD_INACTIVE_LUMINANCE = 20;
+export const PAD_LUMINANCE_4 = 90; // 'Highlighted' pads
+export const PAD_LUMINANCE_3 = 70;
+export const PAD_LUMINANCE_2 = 50;
+export const PAD_LUMINANCE_0 = 20; // Luminance for inactive pads
 
 export const TOTAL_STEPS = 16;
 export const DEFAULT_BPM = 120;

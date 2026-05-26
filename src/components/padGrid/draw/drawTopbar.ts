@@ -63,4 +63,6 @@ export const drawTopBar = (
     ctx.fillRect(0, 0, CANVAS_WIDTH, TOPBAR_HEIGHT);
     drawPlayState(ctx, viewModel, 20, 10);
     writeText(ctx, `${viewModel.currentStep}`, 60, 25);
+    writeText(ctx, `BPM: ${viewModel.patsh.bpm}`, 60, 50);
+    writeText(ctx, `Track: ${viewModel.controller.currentTrack}`, 150, 25);
 };
