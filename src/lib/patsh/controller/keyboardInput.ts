@@ -20,7 +20,7 @@ export const notePadCodes: Record<string, number> = {
     KeyV: 16,
 };
 
-export const modePadCodes: Record<string, number> = {
+export const fnPadCodes: Record<string, number> = {
     Digit8: 1,
     KeyI: 2,
     KeyK: 3,
@@ -29,6 +29,7 @@ export const modePadCodes: Record<string, number> = {
     KeyO: 6,
     KeyL: 7,
     Period: 8,
+    Slash: 9,
 };
 
 export function useKeyboardInput(controller: Controller) {
@@ -46,8 +47,8 @@ export function useKeyboardInput(controller: Controller) {
 
             if (code in notePadCodes) {
                 controller.pressNotePad(notePadCodes[code]);
-            } else if (code in modePadCodes) {
-                controller.pressFnPad(modePadCodes[code]);
+            } else if (code in fnPadCodes) {
+                controller.pressFnPad(fnPadCodes[code]);
             }
         }
 
@@ -56,8 +57,8 @@ export function useKeyboardInput(controller: Controller) {
             activeCodes.delete(code);
             if (code in notePadCodes) {
                 controller.releaseNotePad(notePadCodes[code]);
-            } else if (code in modePadCodes) {
-                controller.releaseFnPad(modePadCodes[code]);
+            } else if (code in fnPadCodes) {
+                controller.releaseFnPad(fnPadCodes[code]);
             }
         }
 

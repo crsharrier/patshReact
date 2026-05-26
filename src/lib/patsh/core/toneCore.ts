@@ -33,7 +33,9 @@ export class ToneCore {
         for (const [trackNum, trackState] of Object.entries(
             this.patsh.tracks
         )) {
-            if (trackState.muted) continue;
+            if (Object.values(this.patsh.tracks).some((t) => t.soloed) && !trackState.soloed)
+                continue;
+            if (trackState.muted && !trackState.soloed) continue;
             const stepState = trackState.steps[this.currentStep];
             if (stepState.active) {
                 const player = this.trackPlayers?.player(trackNum);

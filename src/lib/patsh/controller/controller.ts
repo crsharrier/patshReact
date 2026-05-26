@@ -20,12 +20,17 @@ class NotePad {
     press(padMode: PadMode) {
         const trackNum = this.controller.currentTrack;
         const stepState = this.patsh.tracks[trackNum].steps[this.id];
-        if (padMode.name === "noteEdit") {
+        if (padMode.name === "notePlay") {
+            this.patsh.previewSound(this.id);
+        } else if (padMode.name === "noteEdit") {
             stepState.active = !stepState.active;
         } else if (padMode.name === "trackSelect") {
             this.controller.currentTrack = this.id;
-        } else if (padMode.name === "notePlay") {
-            this.patsh.previewSound(this.id);
+        } else if (padMode.name === "mute") {
+            const track = this.patsh.tracks[this.id];
+            track.muted = !track.muted;
+        } else if (padMode.name === "solo") {
+            this.patsh.toggleSoloed(this.id);
         }
     }
 
@@ -56,8 +61,23 @@ class FnPad {
         }
     }
 
+    private pressHoldFn() {
+        if (this.padFn.fn.name === "shift") {
+            this.controller.shiftMode = true;
+        }
+    }
+
+    private releaseHoldFn() {
+        if (this.padFn.fn.name === "shift") {
+            this.controller.shiftMode = false;
+        }
+    }
+
     private pressToggleMode() {
-        const newMode = this.padFn.fn.name as PadMode["name"];
+        const newMode = this.controller.shiftMode
+            ? this.padFn.shiftFn?.name
+            : this.padFn.fn.name;
+        // const newMode = this.padFn.fn.name as PadMode["name"];
         if (this.controller.padMode.name === newMode) {
             this.controller.padMode = DEFAULT_PAD_MODE;
         } else {
@@ -69,8 +89,10 @@ class FnPad {
 
     private pressHoldMode() {
         this.prevPadMode = this.controller.padMode;
-        this.controller.padMode = fnPadDefs[this.id as keyof typeof fnPadDefs]
-            .fn as PadMode;
+        const padDef = fnPadDefs[this.id as keyof typeof fnPadDefs];
+        this.controller.padMode = this.controller.shiftMode
+            ? (padDef.shiftFn as PadMode)
+            : (padDef.fn as PadMode);
     }
 
     private releaseHoldMode() {
@@ -85,12 +107,16 @@ class FnPad {
             this.pressHoldMode();
         } else if (this.padFn.fn.type === "fn") {
             this.pressFn();
+        } else if (this.padFn.fn.type === "holdFn") {
+            this.pressHoldFn();
         }
     }
 
     release() {
         if (this.padFn.fn.type === "holdMode") {
             this.releaseHoldMode();
+        } else if (this.padFn.fn.type === "holdFn") {
+            this.releaseHoldFn();
         }
     }
 }
@@ -121,7 +147,7 @@ export class Controller {
             ])
         );
         this.fnPads = Object.fromEntries(
-            Array.from({ length: 8 }, (_, i) => [i + 1, new FnPad(i + 1, this)])
+            Array.from({ length: 9 }, (_, i) => [i + 1, new FnPad(i + 1, this)])
         );
         this.notePadListeners = [];
         this.fnPadListeners = [];

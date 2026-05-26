@@ -4,7 +4,7 @@ import { Controller } from "@/lib/patsh/controller/controller";
 import { ViewModel } from "@/lib/patsh/view/viewModel";
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "@/lib/patsh/config";
 import type { PatshCore } from "@/lib/patsh/core/patshCore";
-import { drawPadGrid } from "./draw";
+import { drawPadGrid } from "../../lib/patsh/view/draw";
 import { Input } from "../ui/input";
 import { Play, StopCircle } from "lucide-react";
 

@@ -1,7 +1,7 @@
 export type PadFnDef = {
     name: string;
     hue: number;
-    type: "toggleMode" | "holdMode" | "fn";
+    type: "toggleMode" | "holdMode" | "fn" | "holdFn";
 };
 
 export const padFnDefs = {
@@ -18,7 +18,7 @@ export const padFnDefs = {
     shift: {
         name: "shift",
         hue: 247.5,
-        type: "holdMode",
+        type: "holdFn",
     },
 } as const satisfies Record<string, PadFnDef>;
 
@@ -96,6 +96,10 @@ export const fnPadDefs = {
     },
     8: {
         fn: padFnDefs["stop"],
+        shiftFn: null,
+    },
+    9: {
+        fn: padFnDefs["shift"],
         shiftFn: null,
     },
 } as const satisfies Record<number, FnPadDef>;

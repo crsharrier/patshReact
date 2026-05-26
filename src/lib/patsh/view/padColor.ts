@@ -16,15 +16,6 @@ const otherLuminance: LuminanceFn = (viewModel: ViewModel, padNum: number) => {
     return PAD_LUMINANCE_0;
 };
 
-const trackSelectLuminance: LuminanceFn = (
-    viewModel: ViewModel,
-    padNum: number
-) => {
-    const currentTrack = viewModel.controller.currentTrack;
-    if (currentTrack === padNum) return PAD_LUMINANCE_2;
-    return PAD_LUMINANCE_0;
-};
-
 const noteEditLuminance: LuminanceFn = (
     viewModel: ViewModel,
     padNum: number
@@ -37,14 +28,37 @@ const noteEditLuminance: LuminanceFn = (
     return PAD_LUMINANCE_0;
 };
 
+const trackSelectLuminance: LuminanceFn = (
+    viewModel: ViewModel,
+    padNum: number
+) => {
+    const currentTrack = viewModel.controller.currentTrack;
+    if (currentTrack === padNum) return PAD_LUMINANCE_2;
+    return PAD_LUMINANCE_0;
+};
+
+const muteLuminance: LuminanceFn = (viewModel: ViewModel, padNum: number) => {
+    const track = viewModel.controller.patsh.tracks[padNum];
+    if (viewModel.patsh.isNotePadPlaying(padNum)) return PAD_LUMINANCE_2;
+    if (track.muted && !track.soloed) return PAD_LUMINANCE_0;
+    return PAD_LUMINANCE_1;
+};
+
+const soloLuminance: LuminanceFn = (viewModel: ViewModel, padNum: number) => {
+    const track = viewModel.controller.patsh.tracks[padNum];
+    if (viewModel.patsh.isNotePadPlaying(padNum)) return PAD_LUMINANCE_2;
+    if (track.soloed) return PAD_LUMINANCE_1;
+    return PAD_LUMINANCE_0;
+};
+
 const LUMINANCE_FNS: Record<PadMode["name"], LuminanceFn> = {
     notePlay: otherLuminance,
     noteEdit: noteEditLuminance,
     fx: otherLuminance,
     perf: otherLuminance,
     trackSelect: trackSelectLuminance,
-    mute: otherLuminance,
-    solo: otherLuminance,
+    mute: muteLuminance,
+    solo: soloLuminance,
 };
 
 // =============================================================================

@@ -1,8 +1,5 @@
 import { PAD_HEIGHT, PAD_WIDTH, PLAYHEAD_COLOR } from "@/lib/patsh/config";
-import {
-    modePadCodes,
-    notePadCodes,
-} from "@/lib/patsh/controller/keyboardInput";
+import { fnPadCodes, notePadCodes } from "@/lib/patsh/controller/keyboardInput";
 import type { ViewModel } from "@/lib/patsh/view/viewModel";
 
 function formatKeyLabel(code: string) {
@@ -58,7 +55,7 @@ const drawNotePads = (ctx: CanvasRenderingContext2D, viewModel: ViewModel) => {
 };
 
 const modePadKeysMap = Object.fromEntries(
-    Object.entries(modePadCodes).map(([code, value]) => [
+    Object.entries(fnPadCodes).map(([code, value]) => [
         value,
         formatKeyLabel(code),
     ])

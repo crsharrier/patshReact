@@ -81,6 +81,7 @@ export class PatshCore {
         this.toneCore.previewSound(trackNum);
     }
 
+    // =========================================================================
     playNotePad(num: number) {
         this.playingNotePads.add(num);
         setTimeout(() => {
@@ -90,5 +91,15 @@ export class PatshCore {
 
     isNotePadPlaying(num: number): boolean {
         return this.playingNotePads.has(num);
+    }
+
+    toggleSoloed(trackNum: number) {
+        for (const [num, trackState] of Object.entries(this.tracks)) {
+            if (num === trackNum.toString()) {
+                trackState.soloed = !trackState.soloed;
+            } else {
+                trackState.soloed = false; // Un-solo all other tracks
+            }
+        }
     }
 }
