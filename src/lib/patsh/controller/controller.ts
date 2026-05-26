@@ -19,11 +19,10 @@ class NotePad {
 
     press(padMode: PadMode) {
         const trackNum = this.controller.currentTrack;
-        const stepState = this.patsh.tracks[trackNum].steps[this.id];
         if (padMode.name === "notePlay") {
             this.patsh.previewSound(this.id);
         } else if (padMode.name === "noteEdit") {
-            stepState.active = !stepState.active;
+            this.controller.updateStep(trackNum, this.id);
         } else if (padMode.name === "trackSelect") {
             this.controller.currentTrack = this.id;
         } else if (padMode.name === "mute") {
@@ -125,7 +124,7 @@ type PressReleaseListeners = {
     release?: (n: number) => void;
 };
 
-export class Controller {
+export class Controller extends EventTarget {
     patsh: PatshCore;
     shiftMode: boolean;
     padMode: PadMode;
@@ -136,6 +135,7 @@ export class Controller {
     fnPadListeners: PressReleaseListeners[];
 
     constructor(patsh: PatshCore) {
+        super();
         this.patsh = patsh;
         this.shiftMode = false;
         this.padMode = DEFAULT_PAD_MODE;
@@ -151,6 +151,12 @@ export class Controller {
         );
         this.notePadListeners = [];
         this.fnPadListeners = [];
+    }
+
+    updateStep(trackNum: number, stepId: number) {
+        this.patsh.tracks[trackNum].steps[stepId].active =
+            !this.patsh.tracks[trackNum].steps[stepId].active;
+        this.dispatchEvent(new CustomEvent("updateStep"));
     }
 
     registerNotePadListener(callbacks: PressReleaseListeners) {
