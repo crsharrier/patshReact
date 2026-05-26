@@ -1,5 +1,6 @@
 import {
     PAD_LUMINANCE_0,
+    PAD_LUMINANCE_1,
     PAD_LUMINANCE_2,
     PAD_LUMINANCE_4,
     PAD_SATURATION,
@@ -11,8 +12,7 @@ type LuminanceFn = (viewModel: ViewModel, padNum: number) => number;
 
 // =============================================================================
 const otherLuminance: LuminanceFn = (viewModel: ViewModel, padNum: number) => {
-    void viewModel;
-    void padNum;
+    if (viewModel.patsh.isNotePadPlaying(padNum)) return PAD_LUMINANCE_1;
     return PAD_LUMINANCE_0;
 };
 
@@ -33,6 +33,7 @@ const noteEditLuminance: LuminanceFn = (
     const track = viewModel.controller.patsh.tracks[trackNum];
     const stepState = track.steps[padNum];
     if (stepState.active) return PAD_LUMINANCE_2;
+    if (trackNum === padNum) return PAD_LUMINANCE_1;
     return PAD_LUMINANCE_0;
 };
 

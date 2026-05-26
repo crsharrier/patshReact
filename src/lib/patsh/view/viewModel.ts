@@ -11,6 +11,7 @@ import {
 } from "../config";
 import type { Controller } from "../controller/controller";
 import { fnPadDefs } from "../controller/controllerConstants";
+import { TRACK_SAMPLE_URLS } from "../core/coreConstants";
 import type { PatshCore } from "../core/patshCore";
 import { computeNotePadColor } from "./padColor";
 
@@ -22,6 +23,13 @@ type PadState = {
     height: number;
     text1?: string;
     text2?: string;
+    text3?: string;
+};
+
+const getTrackSampleName = (trackNum: number): string => {
+    const index = trackNum - 1; // Convert to 0-based index
+    const fullName = TRACK_SAMPLE_URLS[index] || "Unknown Sample";
+    return fullName.split(".")[0]; // Remove file extension
 };
 
 // =============================================================================
@@ -67,6 +75,7 @@ export class ViewModel {
                     y: PADDING + TOPBAR_HEIGHT + i * (PAD_HEIGHT + PAD_GAP),
                     width: PAD_WIDTH,
                     height: PAD_HEIGHT,
+                    text3: getTrackSampleName(stepNum),
                 };
             }
         }

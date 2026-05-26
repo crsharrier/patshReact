@@ -16,6 +16,7 @@ export const PAD_SATURATION = 70; // Saturation for pad colors
 export const PAD_LUMINANCE_4 = 90; // 'Highlighted' pads
 export const PAD_LUMINANCE_3 = 70;
 export const PAD_LUMINANCE_2 = 50;
+export const PAD_LUMINANCE_1 = 35;
 export const PAD_LUMINANCE_0 = 20; // Luminance for inactive pads
 
 export const TOTAL_STEPS = 16;

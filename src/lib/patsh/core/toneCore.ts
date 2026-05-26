@@ -39,7 +39,7 @@ export class ToneCore {
                 const player = this.trackPlayers?.player(trackNum);
                 if (player) {
                     player.start(time);
-                    // console.log(`Playing track ${trackNum} at time ${time}`);
+                    this.patsh.playNotePad(Number(trackNum));
                 }
             }
         }
@@ -86,6 +86,14 @@ export class ToneCore {
             Tone.getTransport().pause();
         } else {
             Tone.getTransport().start();
+        }
+    }
+
+    async previewSound(trackNum: number) {
+        await this.ensureInitialized();
+        const player = this.trackPlayers?.player(trackNum.toString());
+        if (player) {
+            player.start();
         }
     }
 }

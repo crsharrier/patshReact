@@ -24,6 +24,8 @@ class NotePad {
             stepState.active = !stepState.active;
         } else if (padMode.name === "trackSelect") {
             this.controller.currentTrack = this.id;
+        } else if (padMode.name === "notePlay") {
+            this.patsh.previewSound(this.id);
         }
     }
 

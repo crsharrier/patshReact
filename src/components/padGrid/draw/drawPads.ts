@@ -1,4 +1,4 @@
-import { PAD_WIDTH, PLAYHEAD_COLOR } from "@/lib/patsh/config";
+import { PAD_HEIGHT, PAD_WIDTH, PLAYHEAD_COLOR } from "@/lib/patsh/config";
 import {
     modePadCodes,
     notePadCodes,
@@ -48,6 +48,7 @@ const drawNotePads = (ctx: CanvasRenderingContext2D, viewModel: ViewModel) => {
         );
         ctx.fillText(`${pad.text1 || ""}`, pad.x + 5, pad.y + 15);
         ctx.fillText(`${pad.text2 || ""}`, pad.x + 5, pad.y + 30);
+        ctx.fillText(`${pad.text3 || ""}`, pad.x + 5, pad.y + PAD_HEIGHT - 5);
         if (Number(padKey) === viewModel.patsh.currentStep) {
             ctx.strokeStyle = PLAYHEAD_COLOR;
             ctx.lineWidth = 3;
@@ -79,6 +80,7 @@ const drawModePads = (ctx: CanvasRenderingContext2D, viewModel: ViewModel) => {
         );
         ctx.fillText(`${pad.text1 || ""}`, pad.x + 5, pad.y + 50);
         ctx.fillText(`${pad.text2 || ""}`, pad.x + 5, pad.y + 15);
+        ctx.fillText(`${pad.text3 || ""}`, pad.x + 5, pad.y + PAD_HEIGHT - 5);
     }
 };
 

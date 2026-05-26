@@ -34,11 +34,13 @@ function createEmptyTracks(numTracks: number = 16): TrackStates {
 export class PatshCore {
     private toneCore: ToneCore;
 
+    private playingNotePads: Set<number>;
     isRecording: boolean;
     tracks: TrackStates;
     fxs: FxState[];
 
     constructor() {
+        this.playingNotePads = new Set();
         this.isRecording = false;
         this.tracks = createEmptyTracks();
         this.fxs = [];
@@ -50,49 +52,6 @@ export class PatshCore {
     get currentStep(): number {
         return this.toneCore.currentStep;
     }
-
-    // private playStep(time: number, trackNum: string) {
-    //     if (!this.trackPlayers?.has(trackNum)) {
-    //         if (!this.warnedTrackPlayers.has(trackNum)) {
-    //             console.warn(
-    //                 `No player found for track ${trackNum}. Check TRACK_SAMPLE_URLS mapping.`
-    //             );
-    //             this.warnedTrackPlayers.add(trackNum);
-    //         }
-    //         return;
-    //     }
-
-    //     const player = this.trackPlayers.player(trackNum);
-    //     if (!player.loaded) {
-    //         if (!this.warnedTrackPlayers.has(trackNum)) {
-    //             console.warn(
-    //                 `Player for track ${trackNum} is not loaded yet. Skipping trigger.`
-    //             );
-    //             this.warnedTrackPlayers.add(trackNum);
-    //         }
-    //         return;
-    //     }
-
-    //     console.log(`Triggering track ${trackNum} at time ${time.toFixed(2)}s`);
-    //     player.start(time);
-    // }
-
-    // private advanceSequencer = (time: number) => {
-    //     for (const trackNum in this.tracks) {
-    //         const track = this.tracks[trackNum];
-    //         if (track.muted) continue;
-    //         if (
-    //             Object.values(this.tracks).some((t) => t.soloed) &&
-    //             !track.soloed
-    //         )
-    //             continue;
-
-    //         const stepState = track.steps[this.currentStep];
-    //         if (stepState?.active) {
-    //             this.playStep(time, trackNum);
-    //         }
-    //     }
-    // };
 
     get bpm() {
         return this.toneCore.bpm;
@@ -116,5 +75,20 @@ export class PatshCore {
 
     async stop() {
         await this.toneCore.stop();
+    }
+
+    previewSound(trackNum: number) {
+        this.toneCore.previewSound(trackNum);
+    }
+
+    playNotePad(num: number) {
+        this.playingNotePads.add(num);
+        setTimeout(() => {
+            this.playingNotePads.delete(num);
+        }, 100); // Clear after 100ms (adjust as needed)
+    }
+
+    isNotePadPlaying(num: number): boolean {
+        return this.playingNotePads.has(num);
     }
 }
